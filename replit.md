@@ -1,58 +1,88 @@
-# COVENANT.AI Enterprise v3.0
+# COVENANT NEXUS v8.0 — Constitutional Quantum Ethical Superintelligence
 
-Constitutional AI Platform for enterprise-grade AI alignment and compliance monitoring.
+Merged platform: COVENANT.AI Enterprise v3.0 backend + COVENANT NEXUS v8.0 multi-agent Claude evaluation engine.
 
 ## Architecture
 
-- **Frontend**: Vite + React + TypeScript, running on port 5000
-- **Backend**: FastAPI (Python), running on port 8000
-- **Database**: PostgreSQL (Replit-managed)
+- **Frontend**: Vite + React + TypeScript — port 5000 (dark theme, sidebar nav)
+- **Backend**: FastAPI (Python) — port 8000
+- **Database**: PostgreSQL (Replit-managed, async via asyncpg)
+- **AI Engine**: 4 parallel Claude Sonnet 4 agents (requires ANTHROPIC_API_KEY)
 
 ## Project Structure
 
 ```
 /
-├── frontend/          # Vite + React frontend
-│   ├── src/
-│   │   ├── pages/    # Route pages (Dashboard, Evaluator, Compliance, Analytics, Settings)
-│   │   ├── App.tsx   # React Router setup
-│   │   └── main.tsx  # Entry point
-│   ├── vite.config.ts # Vite config (port 5000, proxy /api -> :8000)
-│   └── package.json
-├── backend/           # FastAPI Python backend
-│   └── src/covenant/
-│       ├── main.py   # FastAPI app entry point
-│       ├── api/      # Route handlers
-│       ├── core/     # Constitutional engine
-│       ├── db/       # Database session (SQLAlchemy async)
-│       ├── utils/    # Config, logging
-│       └── monitoring/ # Prometheus metrics
-└── start.sh           # Startup script (runs both services)
+├── frontend/src/
+│   ├── components/Layout.tsx    # Sidebar nav layout
+│   ├── pages/Dashboard.tsx      # Agent status, axiom overview, live API status
+│   ├── pages/Evaluator.tsx      # 4-agent quantum evaluation (HTTP + WebSocket modes)
+│   ├── pages/Compliance.tsx     # 5 axioms with implications and verdict protocol
+│   ├── pages/Analytics.tsx      # Metrics: verdict distribution, axiom radar, agent perf
+│   └── pages/Settings.tsx       # Engine config, API key status, security info
+├── backend/src/covenant/
+│   ├── main.py                  # FastAPI app — mounts all routers
+│   ├── api/nexus_routes.py      # NEXUS v8: QuantumEthicalEngine, 4 agents, WebSocket
+│   ├── api/routes.py            # Core evaluation routes
+│   ├── api/auth_routes.py       # JWT authentication
+│   ├── api/enterprise_routes.py # Enterprise constraint bundles
+│   ├── api/admin_routes.py      # Admin / health
+│   ├── core/constitutional_engine.py  # v3 constitutional engine (z3-solver)
+│   ├── db/session.py            # SQLAlchemy async engine
+│   └── utils/config.py          # Pydantic settings (reads env vars)
+└── start.sh                     # Starts backend (:8000) then frontend (:5000)
 ```
 
-## Running the App
+## Key API Endpoints
 
-The app is started via `start.sh` which:
-1. Starts the FastAPI backend on port 8000 (background)
-2. Starts the Vite dev server on port 5000 (foreground)
+| Method | Path | Description |
+|--------|------|-------------|
+| POST | `/api/quantum_evaluate` | 4-agent Claude evaluation (NEXUS v8) |
+| WS | `/api/ws/evaluate` | Real-time streaming agent results |
+| GET | `/api/axioms` | 5 constitutional axioms |
+| GET | `/api/agents` | Agent list + live/demo status |
+| GET | `/health` | Backend health check |
+| POST | `/api/v1/evaluate` | v3 constitutional engine evaluation |
+| GET | `/api/docs` | Swagger UI |
 
-## Key Configuration
+## Constitutional Axioms (Inviolable)
 
-- Frontend proxies `/api` requests to `http://localhost:8000`
-- Backend CORS is configured to allow all origins in development
-- Database URL is read from `DATABASE_URL` env var (auto-converted to asyncpg format)
-- Backend reads `SECRET_KEY` and `JWT_SECRET` from environment (defaults are insecure placeholders for dev only)
+1. **Observer Rights** — No action may remove an observer's ability to observe or act
+2. **Reversibility** — Prefer reversible actions; irreversible = max scrutiny
+3. **Transparency** — All reasoning must be fully explainable and auditable
+4. **Non-Domination** — No entity may gain disproportionate systemic control
+5. **Truth Preservation** — Never create, amplify, or propagate false information
 
-## Dependencies
+## Agent Architecture (NEXUS v8)
 
-### Frontend
-- React 18, React Router v6, TanStack Query, Zustand, Recharts, Lucide React, Tailwind CSS
+- **Observer Protector** — Guards observer autonomy across all futures
+- **Quantum Risk Matrix** — Assesses systemic/cascading risks (10,000 futures)
+- **Constitutional Engine** — Scores against all 5 axioms with numerical output
+- **Strategic Nexus** — Synthesizes agent outputs into final verdict
 
-### Backend
-- FastAPI, Uvicorn, SQLAlchemy (async), asyncpg, Pydantic v2, python-jose, passlib, prometheus_client, numpy, z3-solver
+## Verdict Protocol
+
+- `EXECUTE` — All agents pass, safe across >95% of futures
+- `REVIEW` — One or more agents flag concerns, human oversight needed
+- `BLOCK` — Constitutional violation detected, must not proceed
+
+## Environment Variables
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `ANTHROPIC_API_KEY` | For live AI | Enables real Claude Sonnet 4 evaluation |
+| `DATABASE_URL` | Auto-set | PostgreSQL URL (auto-converted to asyncpg) |
+| `SECRET_KEY` | Production | JWT signing key |
+| `JWT_SECRET` | Production | JWT secret |
+
+## Modes
+
+- **Demo mode** (no ANTHROPIC_API_KEY): Returns deterministic mock responses instantly
+- **Live mode** (with ANTHROPIC_API_KEY): Calls 4 Claude Sonnet 4 agents in parallel (~800ms)
 
 ## Security Notes
 
-- `SECRET_KEY` and `JWT_SECRET` should be set as environment secrets in production
-- `TrustedHostMiddleware` is only applied in production mode (`APP_ENV=production`)
-- CORS is open (`*`) in development — restrict in production via `CORS_ORIGINS` env var
+- Constitutional axioms are hardcoded — no override codes exist
+- CORS open in development (`*`) — restrict via `CORS_ORIGINS` in production
+- `TrustedHostMiddleware` only applies when `APP_ENV=production`
+- Set `SECRET_KEY` and `JWT_SECRET` as env secrets for production deployments

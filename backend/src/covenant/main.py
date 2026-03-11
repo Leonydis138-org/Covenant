@@ -23,6 +23,7 @@ from covenant.api import routes
 from covenant.api import enterprise_routes
 from covenant.api import admin_routes
 from covenant.api import auth_routes
+from covenant.api import nexus_routes
 from covenant.core.constitutional_engine import create_engine
 from covenant.utils.logging_config import setup_logging
 from covenant.utils.config import settings
@@ -185,6 +186,7 @@ app.include_router(auth_routes.router, prefix="/api/v1/auth", tags=["Authenticat
 app.include_router(routes.router, prefix="/api/v1", tags=["Core"])
 app.include_router(enterprise_routes.router, prefix="/api/v1/enterprise", tags=["Enterprise"])
 app.include_router(admin_routes.router, prefix="/api/v1/admin", tags=["Admin"])
+app.include_router(nexus_routes.router, prefix="/api", tags=["NEXUS v8"])
 
 # Metrics endpoint
 metrics_app = make_asgi_app()
