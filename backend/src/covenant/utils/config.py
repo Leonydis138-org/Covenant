@@ -1,35 +1,43 @@
 """Configuration management"""
+import os
 from pydantic_settings import BaseSettings
 from typing import List
+
+
+def _build_async_db_url() -> str:
+    raw = os.environ.get("DATABASE_URL", "")
+    if raw.startswith("postgresql://") or raw.startswith("postgres://"):
+        return raw.replace("postgresql://", "postgresql+asyncpg://", 1).replace(
+            "postgres://", "postgresql+asyncpg://", 1
+        ).split("?")[0]
+    return "postgresql+asyncpg://covenant:covenant@localhost:5432/covenant"
+
 
 class Settings(BaseSettings):
     APP_ENV: str = "development"
     DEBUG: bool = True
     HOST: str = "0.0.0.0"
     PORT: int = 8000
-    
-    # Database
-    DATABASE_URL: str = "postgresql+asyncpg://covenant:covenant@localhost:5432/covenant"
-    DATABASE_POOL_SIZE: int = 20
-    
-    # Redis
+
+    DATABASE_URL: str = _build_async_db_url()
+    DATABASE_POOL_SIZE: int = 5
+
     REDIS_URL: str = "redis://localhost:6379/0"
-    
-    # Security
-    SECRET_KEY: str = "change-me-in-production"
-    JWT_SECRET: str = "jwt-secret-change-me"
+
+    SECRET_KEY: str = "change-me-in-production-use-env-var"
+    JWT_SECRET: str = "jwt-secret-change-in-production"
     JWT_ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
-    
-    # CORS
-    CORS_ORIGINS: List[str] = ["http://localhost:5173", "http://localhost:3000"]
+
+    CORS_ORIGINS: List[str] = ["*"]
     ALLOWED_HOSTS: List[str] = ["*"]
-    
-    # Features
-    ENABLE_QUANTUM_OPTIMIZATION: bool = True
+
+    ENABLE_QUANTUM_OPTIMIZATION: bool = False
     ENABLE_BLOCKCHAIN: bool = False
-    
+
     class Config:
         env_file = ".env"
+        extra = "ignore"
+
 
 settings = Settings()

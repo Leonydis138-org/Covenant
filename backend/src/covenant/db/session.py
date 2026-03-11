@@ -1,31 +1,42 @@
 """Database session management"""
+import os
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker, declarative_base
 from sqlalchemy import text
 
-from covenant.utils.config import settings
 
-# Create async engine
+def _get_async_url() -> str:
+    raw = os.environ.get("DATABASE_URL", "postgresql+asyncpg://covenant:covenant@localhost:5432/covenant")
+    if raw.startswith("postgresql://") or raw.startswith("postgres://"):
+        raw = raw.replace("postgresql://", "postgresql+asyncpg://", 1).replace(
+            "postgres://", "postgresql+asyncpg://", 1
+        )
+    if "?" in raw:
+        raw = raw.split("?")[0]
+    return raw
+
+
+_DB_URL = _get_async_url()
+
 engine = create_async_engine(
-    settings.DATABASE_URL,
-    echo=settings.DEBUG,
-    pool_size=settings.DATABASE_POOL_SIZE,
-    max_overflow=40
+    _DB_URL,
+    echo=False,
+    pool_size=5,
+    max_overflow=10,
 )
 
-# Session factory
 async_session = sessionmaker(
     engine, class_=AsyncSession, expire_on_commit=False
 )
 
-# Base class for models
 Base = declarative_base()
 
+
 async def init_db():
-    """Initialize database"""
+    """Initialize database connection"""
     async with engine.begin() as conn:
         await conn.execute(text("SELECT 1"))
-        # In production: await conn.run_sync(Base.metadata.create_all)
+
 
 async def get_db():
     """Dependency for getting DB session"""
