@@ -179,7 +179,7 @@ jobs:
       frontend_tags: ${{ steps.docker-tags.outputs.frontend_tags }}
     steps:
       - uses: actions/checkout@v4
-      - uses: docker/setup-buildx-action@v3
+      - uses: docker/setup-buildx-action@v4
       - name: Set Docker tags
         id: docker-tags
         run: |
@@ -218,7 +218,7 @@ jobs:
     if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
     steps:
       - uses: actions/checkout@v4
-      - uses: docker/setup-buildx-action@v3
+      - uses: docker/setup-buildx-action@v4
       - name: Login to Docker Hub
         uses: docker/login-action@v4
         with:
