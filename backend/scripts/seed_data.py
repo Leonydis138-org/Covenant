@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 """Seed database with sample data"""
 import asyncio
-from covenant.db.session import async_session
-from covenant.core.constitutional_engine import Constraint, ConstraintType
 
 async def seed_constraints():
     """Seed sample constraints"""
