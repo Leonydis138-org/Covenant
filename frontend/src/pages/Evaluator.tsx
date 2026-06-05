@@ -214,10 +214,10 @@ export default function Evaluator() {
                   </div>
                   {verdict && <VerdictBadge verdict={verdict.toUpperCase()} />}
                   {data.error && <p className="text-xs text-red-400">{data.error}</p>}
-                  {data.result?.reasoning && <p className="text-xs text-gray-400 leading-relaxed">{String(data.result.reasoning)}</p>}
-                  {data.result?.rationale && <p className="text-xs text-gray-400 leading-relaxed">{String(data.result.rationale)}</p>}
-                  {data.result?.mitigation && <p className="text-xs text-gray-400 leading-relaxed">{String(data.result.mitigation)}</p>}
-                  {data.result?.recommendation && <p className="text-xs text-gray-400 leading-relaxed">{String(data.result.recommendation)}</p>}
+                  {data.result?.reasoning && <p className="text-xs text-gray-400 leading-relaxed">{data.result.reasoning as React.ReactNode}</p>}
+                  {data.result?.rationale && <p className="text-xs text-gray-400 leading-relaxed">{data.result.rationale as React.ReactNode}</p>}
+                  {data.result?.mitigation && <p className="text-xs text-gray-400 leading-relaxed">{data.result.mitigation as React.ReactNode}</p>}
+                  {data.result?.recommendation && <p className="text-xs text-gray-400 leading-relaxed">{data.result.recommendation as React.ReactNode}</p>}
                   {data.result?.protection_score !== undefined && (
                     <ScoreBar score={Number(data.result.protection_score)} />
                   )}
