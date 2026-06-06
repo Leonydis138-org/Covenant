@@ -4,7 +4,19 @@ import { Zap, Eye, GitBranch, Shield, Brain, CheckCircle, XCircle, AlertTriangle
 interface AgentResult {
   agent_id: string
   agent_name: string
-  result: Record<string, unknown>
+  result: {
+    verdict?: string
+    status?: string
+    final_verdict?: string
+    risk_level?: string
+    reasoning?: string
+    rationale?: string
+    mitigation?: string
+    recommendation?: string
+    protection_score?: number
+    composite?: number
+    confidence?: number
+  }
   latency_ms: number
 }
 
@@ -23,7 +35,7 @@ interface EvalResult {
 
 type StreamMsg =
   | { type: 'start'; agents: string[] }
-  | { type: 'agent_result'; agent_id: string; agent_name: string; result: Record<string, unknown>; latency_ms: number }
+  | { type: 'agent_result'; agent_id: string; agent_name: string; result: AgentResult['result']; latency_ms: number }
   | { type: 'agent_error'; agent_id: string; error: string }
   | { type: 'complete' }
 
@@ -66,7 +78,7 @@ function ScoreBar({ score }: { score: number }) {
 export default function Evaluator() {
   const [query, setQuery] = useState('')
   const [loading, setLoading] = useState(false)
-  const [streamAgents, setStreamAgents] = useState<Record<string, { result?: Record<string, unknown>; latency_ms?: number; error?: string }>>({})
+  const [streamAgents, setStreamAgents] = useState<Record<string, { result?: AgentResult['result']; latency_ms?: number; error?: string }>>({})
   const [finalResult, setFinalResult] = useState<EvalResult | null>(null)
   const [mode, setMode] = useState<'http' | 'ws'>('http')
   const [error, setError] = useState<string | null>(null)
@@ -88,7 +100,7 @@ export default function Evaluator() {
       if (!res.ok) throw new Error(`HTTP ${res.status}`)
       const data: EvalResult = await res.json()
       setFinalResult(data)
-      const agentMap: Record<string, { result: Record<string, unknown>; latency_ms: number }> = {}
+      const agentMap: Record<string, { result: AgentResult['result']; latency_ms: number }> = {}
       data.agent_results.forEach(a => { agentMap[a.agent_id] = { result: a.result, latency_ms: a.latency_ms } })
       setStreamAgents(agentMap)
     } catch (e: unknown) {
@@ -214,10 +226,10 @@ export default function Evaluator() {
                   </div>
                   {verdict && <VerdictBadge verdict={verdict.toUpperCase()} />}
                   {data.error && <p className="text-xs text-red-400">{data.error}</p>}
-                  {data.result?.reasoning && <p className="text-xs text-gray-400 leading-relaxed">{data.result.reasoning as React.ReactNode}</p>}
-                  {data.result?.rationale && <p className="text-xs text-gray-400 leading-relaxed">{data.result.rationale as React.ReactNode}</p>}
-                  {data.result?.mitigation && <p className="text-xs text-gray-400 leading-relaxed">{data.result.mitigation as React.ReactNode}</p>}
-                  {data.result?.recommendation && <p className="text-xs text-gray-400 leading-relaxed">{data.result.recommendation as React.ReactNode}</p>}
+                  {data.result?.reasoning && <p className="text-xs text-gray-400 leading-relaxed">{String(data.result.reasoning)}</p>}
+                  {data.result?.rationale && <p className="text-xs text-gray-400 leading-relaxed">{String(data.result.rationale)}</p>}
+                  {data.result?.mitigation && <p className="text-xs text-gray-400 leading-relaxed">{String(data.result.mitigation)}</p>}
+                  {data.result?.recommendation && <p className="text-xs text-gray-400 leading-relaxed">{String(data.result.recommendation)}</p>}
                   {data.result?.protection_score !== undefined && (
                     <ScoreBar score={Number(data.result.protection_score)} />
                   )}
