@@ -1,6 +1,7 @@
 {
   "name": "covenant-enterprise-frontend",
   "version": "6.0.0",
+  "type": "module",
   "private": true,
   "scripts": {
     "dev": "vite --port 5000 --host 0.0.0.0",
@@ -31,6 +32,7 @@
     "typescript": "^6.0.3",
     "eslint": "^10.0.3",
     "tailwindcss": "^4.3.0",
+    "@tailwindcss/postcss": "^4.3.0",
     "postcss": "^8.4.49",
     "autoprefixer": "^10.4.20"
   }
