@@ -4,6 +4,7 @@ WORKDIR /app
 
 # Install system dependencies for scipy and other scientific packages
 RUN apt-get update && apt-get install -y \
+    pkg-config \
     gcc \
     g++ \
     gfortran \
